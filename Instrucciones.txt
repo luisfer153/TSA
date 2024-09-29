@@ -1,5 +1,15 @@
-1. Primero ejecuta el script de dependencias.py y luego el de server.py
-3. cuando cierres puedes volver a abrir solo el server.py
-2. ya es toda we
-3. puedes interactar con la carpeta server sin ningun problema
-4. puedes meter y sacar manualmente los mundos desde la carpeta server o desde el programa
+#$%REGLAS#$%
+
+1. clikea el script que se llama depedencias, te aparecera un recuadro que te preguntara-
+-si quires instalar python tu le daras "install"
+2. luego se te abrira una pestaña donde se instalara python-
+- cierrala y ahora si al darle al script de dependencias.py te aparecera una flechita- 
+-arriba a la derecha, dale alli espera a que cargue y luego usala tambien con el archivo server.py
+3. cuando termines todo y quieras abrir denuevo el server puedes volver a abrir solo el server.py
+4. ya es toda we
+5. puedes interactar con la carpeta server sin ningun problema
+6. puedes meter y sacar manualmente los mundos desde la carpeta server o desde el programa
+7. si compartes tu cuenta de tailscale hasta 100 personas pueden usarla
+
+
+mira el video para informacion util ;)

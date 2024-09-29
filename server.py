@@ -37,9 +37,15 @@ def efecto_arcoiris(titulo_ascii):
 
 
 def cerrar_serveo():
-    subprocess.run(['tmux', 'kill-server'], check=True)
-    print("Se ha cerrado serveo")
 
+    try:
+        subprocess.run(['tmux', 'kill-server'], check=True)
+        print("Se ha cerrado serveo")
+    except subprocess.CalledProcessError as e:
+        # Si el comando devuelve un error
+        print(f"\n{Fore.RED}Nunca inciaste serveo o ngrok")
+        time.sleep(3)
+        
 
 
 # Función para agregar el repositorio de Tailscale
@@ -114,8 +120,35 @@ def actualizar_archivo(archivo):
 
 
 def abrirserveo():
-    comando = "tmux new-session -d 'ssh -R 0:localhost:7777 serveo.net'"
-    subprocess.Popen(comando, shell=True)
+# Nombre del archivo donde se guardará la salida
+    output_file = 'serveoip.log'
+    
+    # Crear el archivo vacío si no existe
+    if not os.path.exists(output_file):
+        open(output_file, 'w').close()
+
+    # Comando que quieres ejecutar en una nueva sesión de tmux
+    comando = f"ssh -R 0:localhost:7777 serveo.net > {output_file} 2>&1"
+
+    # Inicia una nueva sesión de tmux y redirige la salida a un archivo
+    subprocess.Popen(['tmux', 'new-session', '-d', 'bash', '-c', comando])
+    
+    # Crear la ruta relativa al archivo de log
+    log_file_path = os.path.join(os.path.dirname(__file__), output_file)
+
+    time.sleep(1)
+
+    try:
+        with open(log_file_path, 'r') as log_file:
+            contenido = log_file.read()  # Leer todo el contenido del archivo
+            print(contenido)  # Imprimir el contenido
+            print(f"{Fore.CYAN}\npuedes revisar la ip en el archivo 'servoip.log'")
+            time.sleep(3)
+    except FileNotFoundError:
+        print(f"El archivo {log_file_path} no existe.")
+    except Exception as e:
+        print(f"Ocurrió un error: {e}")
+  
 
 def abrir_ngrok():
     # Crear o usar una sesión de tmux llamada 'ngrok_session'
@@ -242,11 +275,11 @@ def interfaz():
     # Ahora, mostramos el menú
     while True:
         
-        print(f"{Fore.RED}Solo puedes tener (1) mundo a la vez si usas la aplicacion. de manera manual se pueden tener varios mira el tutorial para ver como ;) {Fore.MAGENTA}| CUIDADO si colocas un nuevo mundo los datos del otro mundo se borraran, primero guardalos {Fore.MAGENTA}lo mismso sucede con los mods {Style.RESET_ALL}")
+        print(f"{Fore.RED}Solo puedes tener (1) mundo a la vez si usas la aplicacion. de manera manual se pueden tener varios mira el tutorial para ver como ;){Fore.MAGENTA}| CUIDADO si colocas un nuevo mundo los datos del otro mundo se borraran, primero guardalos {Fore.MAGENTA}lo mismso sucede con los mods {Style.RESET_ALL}")
         print("\n")
         print("1. Iniciar server")
         print(f"2. Programa de conexión |{Fore.CYAN} configura esto primero ")
-        print(f"3. Actualizar tmod |{Fore.RED} ojito")
+        print(f"3. Actualizar tmod |{Fore.RED} ojito {Fore.CYAN}| deberas importar tus mundos y tus mods denuevo")
         print(f"4. Importar mundo | {Fore.GREEN}primero sube tu mundo a mediafire | {Style.RESET_ALL}")
         print(f"5. importar mods | {Fore.GREEN}primero sube tus mods a mediafire | {Style.RESET_ALL}")
         print("6. salir")
@@ -258,7 +291,7 @@ def interfaz():
         elif opcion == '2':
             conexion()
         elif opcion == '3':
-            actualizar()
+            actualizar_tmod()
         elif opcion == '4':
             importar_mundo()
 
@@ -286,7 +319,7 @@ def abrir_server():
 
 def conexion():
     print("\n")
-    print("¿Qué servicio usarás?\n1. ngrok | el más rápido pero es pago\n2. serveo | aguanta muchas personas pero es lento\n3. tailscale | aguanta pocas personas pero es rápido\n4. Cerrar serveo :)\n5. cerrar tailscale")
+    print(f"¿Qué servicio usarás?\n1. ngrok | el más rápido pero es pago\n2. serveo | aguanta muchas personas pero es lento\n3. tailscale | aguanta pocas personas pero es rápido |{Fore.GREEN} recuerda tener la app en tu equipo{Style.RESET_ALL}\n4. Cerrar ngrok y serveo\n5. cerrar tailscale\n6. atras")
     
     opcion3 = input("Selecciona una opción (1-4): ")
     
@@ -332,26 +365,29 @@ def conexion():
         leer_salida_ngrok()
 
     elif opcion3 == '2':
-        print("Se ha iniciado serveo ya puedes iniciar el server")
+        print(f"{Fore.RED}\nSe ha iniciado serveo ya puedes iniciar el server")
         abrirserveo()
         actualizar_archivo('archivo.txt')
+        time.sleep(4)
         
 
 
     elif opcion3 == '3':
-        print("Configurando Tailscale...")  # Lógica para Tailscale aquí
-        # Puedes implementar la lógica de configuración de Tailscale aquí
+        inciar_tailscale()
 
     elif opcion3 == '4':
         cerrar_serveo()
 
+    elif opcion3 == '5':
+        detener_tailscale()
+
+    elif opcion3 == '6':
+        interfaz()
+
     else:
         print("Opción inválida. Por favor, selecciona una opción válida.")
 
-def actualizar():
-    print("\n")
-    print("Actualizando tModLoader...")  # Lógica para actualizar tModLoader aquí
-    # Puedes implementar la lógica de actualización de tModLoader aquí
+
 
 def importar_mods(destination_folder='mods'):
     
@@ -362,7 +398,7 @@ def importar_mods(destination_folder='mods'):
    
 
     # Preparar el comando para ejecutar mediafire-dl
-    url = input("Coloca tu link de mediafire | la raiz rar o el zip debe contener los mods \n:")
+    url = input("Coloca tu link de mediafire | la raiz del rar o del el zip debe contener los mods \n:")
     command = ['mediafire-dl', url]
     
     try:
@@ -411,7 +447,7 @@ def importar_mundo(destination_folder='worlds'):
         
 
     # Preparar el comando para ejecutar mediafire-dl
-    url = input("Coloca tu link de mediafire | El rar o el zip debe contener todos los archivos del mundo\n:")
+    url = input("Coloca tu link de mediafire | El rar o el zip debe contener todos los archivos del mundo en la raiz\n:")
     command = ['mediafire-dl', url]
     
     try:
@@ -546,7 +582,65 @@ def actualizar_mods(destination_folder='mods'):
     print(f'{Fore.MAGENTA}La ruta de los mods se ha actualizado en {config_path}.{Style.RESET_ALL}')
 
 
+def inciar_tailscale():
+    try:
+        # Ejecutar el comando 'sudo tailscale up'
+        subprocess.Popen(['sudo', 'tailscaled'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        print(f"{Fore.GREEN}\npresiona Ctrl + click en el enlace\nse incia automatico si ya vinculaste")
+        subprocess.run(['sudo', 'tailscale', 'up'], check=True)
+        time.sleep(2)
         
+    except subprocess.CalledProcessError as e:
+        print(f'Error al ejecutar el comando: {e}')
+    except FileNotFoundError:
+        print('El comando "tailscale" no se encuentra. Asegúrate de que esté instalado.')
+
+def detener_tailscale():
+     try:
+        
+        subprocess.run(['sudo', 'pkill', 'tailscaled'], check=True)
+        print(f"{Fore.GREEN}\nse ha detenido tailscale{Style.RESET_ALL}")
+        time.sleep(1)
+
+     except subprocess.CalledProcessError as e:
+        print(f'\n{Fore.RED}nunca abriste tailcale')
+        time.sleep(3)
+
+def actualizar_tmod():
+    usuario = 'tModLoader'
+    repositorio = 'tModLoader'
+    url_releases = f'https://api.github.com/repos/{usuario}/{repositorio}/releases/latest'
+    response = requests.get(url_releases)
+
+    if response.status_code == 200:
+        latest_release = response.json()
+        tmodloader_assets = [asset for asset in latest_release['assets'] if 'tModLoader' in asset['name']]
+
+        if tmodloader_assets:
+            first_asset = tmodloader_assets[0]
+            download_url = first_asset['browser_download_url']
+            archivo_destino = os.path.basename(download_url)
+            r = requests.get(download_url)
+
+            if r.status_code == 200:
+                with open(archivo_destino, 'wb') as f:
+                    f.write(r.content)
+                print(f'Descargado: {archivo_destino}')
+
+                directorio_destino = os.path.join(os.getcwd(), 'server')
+                os.makedirs(directorio_destino, exist_ok=True)
+
+                if archivo_destino.endswith('.zip'):
+                    extraer_zip(archivo_destino, directorio_destino)
+                elif archivo_destino.endswith('.rar'):
+                    extraer_rar(archivo_destino, directorio_destino)
+
+            else:
+                print(f'Error al descargar el archivo: {r.status_code}')
+        else:
+            print('No hay activos de tModLoader disponibles en la última release.')
+    else:
+        print(f'Error al obtener la última release: {response.status_code}')
+
 if __name__ == "__main__":
     main()
-    
