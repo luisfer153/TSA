@@ -1,4 +1,4 @@
-# 💻 $%REGLAS%$ 💻
+# 💻 REGLAS 🌳
 
 ### 1. Instalar Python
 - Haz clic en el script llamado **depedencias.py**.
