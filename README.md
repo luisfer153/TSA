@@ -1,15 +1,30 @@
-#$%REGLAS#$%
+# 💻 $%REGLAS%$ 💻
 
-1. clikea el script que se llama depedencias, te aparecera un recuadro que te preguntara-
--si quires instalar python tu le daras "install"
-2. luego se te abrira una pestaña donde se instalara python-
-- cierrala y ahora si al darle al script de dependencias.py te aparecera una flechita- 
--arriba a la derecha, dale alli espera a que cargue y luego usala tambien con el archivo server.py
-3. cuando termines todo y quieras abrir denuevo el server puedes volver a abrir solo el server.py
-4. ya es toda we
-5. puedes interactar con la carpeta server sin ningun problema
-6. puedes meter y sacar manualmente los mundos desde la carpeta server o desde el programa
-7. si compartes tu cuenta de tailscale hasta 100 personas pueden usarla
+### 1. Instalar Python
+- Haz clic en el script llamado **depedencias.py**.
+- Aparecerá un recuadro que te preguntará si deseas instalar Python. Selecciona **"Install"**.
 
+### 2. Proceso de instalación
+- Se abrirá una nueva pestaña donde se instalará Python automáticamente.
+- Una vez completado, ciérrala.
 
-mira el video para informacion util ;)
+### 3. Ejecutar scripts
+- Ahora, vuelve a hacer clic en el script **depedencias.py**.
+- Aparecerá una flechita en la parte superior derecha. Haz clic en ella y espera a que cargue.
+- Usa el mismo proceso con el archivo **server.py**.
+
+### 4. Iniciar el servidor
+- Cuando termines todo y quieras volver a abrir el servidor, simplemente ejecuta **server.py**.
+
+### 5. Interacción con la carpeta **server**
+- Puedes interactuar con la carpeta **server** sin ningún problema.
+
+### 6. Gestión de mundos
+- Puedes agregar o quitar manualmente los mundos desde la carpeta **server** o hacerlo directamente desde el programa.
+
+### 7. Compartir cuenta de Tailscale
+- Si compartes tu cuenta de **Tailscale**, hasta **100 personas** pueden usarla.
+
+---
+
+🎥 **Mira el video para más información útil! 😉**
