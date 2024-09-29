@@ -132,7 +132,10 @@ def abrirserveo():
 
     # Inicia una nueva sesión de tmux y redirige la salida a un archivo
     subprocess.Popen(['tmux', 'new-session', '-d', 'bash', '-c', comando])
-    
+    comando2 = f'tmux send-keys -t {0} "yes" C-m'
+    time.sleep(3)
+    # Iniciar el subproceso para ejecutar el comando
+    subprocess.Popen(comando2, shell=True)
     # Crear la ruta relativa al archivo de log
     log_file_path = os.path.join(os.path.dirname(__file__), output_file)
 
@@ -523,7 +526,7 @@ def formatear_carpeta(destination_folder='worlds'):
     
 def actualizar_mundo(destination_folder='worlds'):
     # Ruta del archivo de configuración
-    config_path = '/workspaces/TSA/server/serverconfig.txt'
+    config_path = 'server/serverconfig.txt'
     
     # Buscar el archivo .wld en la carpeta de destino
     wld_files = [f for f in os.listdir(destination_folder) if f.endswith('.wld')]
@@ -557,7 +560,7 @@ def actualizar_mundo(destination_folder='worlds'):
 
 def actualizar_mods(destination_folder='mods'):
     # Ruta del archivo de configuración
-    config_path = '/workspaces/TSA/server/serverconfig.txt'
+    config_path = 'server/serverconfig.txt'
 
     # Obtener la ruta de la carpeta de mods
     mod_folder_path = os.path.abspath(destination_folder)
