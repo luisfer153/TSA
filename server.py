@@ -120,7 +120,7 @@ def actualizar_archivo(archivo):
 
 
 def abrirserveo():
-# Nombre del archivo donde se guardará la salida
+    # Nombre del archivo donde se guardará la salida
     output_file = 'serveoip.log'
     
     # Crear el archivo vacío si no existe
@@ -132,26 +132,31 @@ def abrirserveo():
 
     # Inicia una nueva sesión de tmux y redirige la salida a un archivo
     subprocess.Popen(['tmux', 'new-session', '-d', 'bash', '-c', comando])
-    comando2 = f'tmux send-keys -t {0} "yes" C-m'
+    
+    # Espera un poco para que el proceso inicie
     time.sleep(3)
-    # Iniciar el subproceso para ejecutar el comando
+    
+    # Enviar el comando "yes" a la sesión de tmux
+    comando2 = f'tmux send-keys -t 0 "yes" C-m'
     subprocess.Popen(comando2, shell=True)
-    # Crear la ruta relativa al archivo de log
-    log_file_path = os.path.join(os.path.dirname(__file__), output_file)
+    
+    # Crear la ruta absoluta al archivo de log
+    log_file_path = os.path.join(os.getcwd(), output_file)
 
+    # Esperar un poco para asegurarse de que se haya escrito en el archivo
     time.sleep(1)
 
+    # Leer el contenido del archivo
     try:
         with open(log_file_path, 'r') as log_file:
             contenido = log_file.read()  # Leer todo el contenido del archivo
             print(contenido)  # Imprimir el contenido
-            print(f"{Fore.CYAN}\npuedes revisar la ip en el archivo 'servoip.log'")
-            time.sleep(3)
+            print(f"{Fore.CYAN}\nPuedes revisar la IP en el archivo 'serveoip.log'")
     except FileNotFoundError:
         print(f"El archivo {log_file_path} no existe.")
     except Exception as e:
         print(f"Ocurrió un error: {e}")
-  
+
 
 def abrir_ngrok():
     # Crear o usar una sesión de tmux llamada 'ngrok_session'
