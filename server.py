@@ -1,3 +1,4 @@
+import shutil
 import subprocess
 import requests
 import os
@@ -240,37 +241,48 @@ def interfaz():
 
     # Ahora, mostramos el menú
     while True:
+        
+        print(f"{Fore.RED}Solo puedes tener (1) mundo a la vez si usas la aplicacion. de manera manual se pueden tener varios mira el tutorial para ver como ;) {Fore.MAGENTA}| CUIDADO si colocas un nuevo mundo los datos del otro mundo se borraran, primero guardalos {Fore.MAGENTA}lo mismso sucede con los mods {Style.RESET_ALL}")
         print("\n")
         print("1. Iniciar server")
-        print("2. Programa de conexión | configura esto primero ")
-        print("3. Actualizar tmod | ojito")
-        print("4. Importar mundo | primero sube tu mundo a mediafire")
-        print("5. Cancelar")
+        print(f"2. Programa de conexión |{Fore.CYAN} configura esto primero ")
+        print(f"3. Actualizar tmod |{Fore.RED} ojito")
+        print(f"4. Importar mundo | {Fore.GREEN}primero sube tu mundo a mediafire | {Style.RESET_ALL}")
+        print(f"5. importar mods | {Fore.GREEN}primero sube tus mods a mediafire | {Style.RESET_ALL}")
+        print("6. salir")
         
         opcion = input("Selecciona una opción (1-5): ")
 
         if opcion == '1':
-            iniciar_server()
+            abrir_server()
         elif opcion == '2':
             conexion()
         elif opcion == '3':
             actualizar()
         elif opcion == '4':
-            print("Volviendo atrás...")
-            break  # Salir del bucle y volver atrás
+            importar_mundo()
 
         elif opcion == '5':
-            print('saliendo....')
-            sys.exit()
+            importar_mods()
 
+        elif opcion == '6':
+            print('saliendo....')
+            sys.exit()        
     
         else:
             print("Opción inválida. Por favor, selecciona una opción válida.")
 
-def iniciar_server():
-    print("\n")
-    print("Iniciando el servidor...")
-    input("Presiona Enter para continuar...")
+def abrir_server():
+    # Ruta relativa del script a abrir
+    script_path = os.path.join('server', 'start-tModLoaderServer.sh')
+    
+    try:
+        # Ejecutar el script
+        subprocess.run(['bash', script_path], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f'Error al ejecutar el script: {e}')
+    except FileNotFoundError:
+        print(f'El archivo {script_path} no se encuentra.')
 
 def conexion():
     print("\n")
@@ -341,7 +353,107 @@ def actualizar():
     print("Actualizando tModLoader...")  # Lógica para actualizar tModLoader aquí
     # Puedes implementar la lógica de actualización de tModLoader aquí
 
-# Bloque 1: Punto de entrada e importaciones
+def importar_mods(destination_folder='mods'):
+    
+    # Comprobar y crear la carpeta de destino si no existe
+    if not os.path.exists(destination_folder):
+        os.makedirs(destination_folder)
+        
+   
+
+    # Preparar el comando para ejecutar mediafire-dl
+    url = input("Coloca tu link de mediafire | la raiz rar o el zip debe contener los mods \n:")
+    command = ['mediafire-dl', url]
+    
+    try:
+        # Ejecutar el comando
+        subprocess.run(command, check=True, cwd=destination_folder)
+        print(f'\n{Fore.RED}mods descargados y guardado en {destination_folder}{Style.RESET_ALL}')
+        
+        # Listar los archivos en la carpeta de destino
+        archivos_descargados = os.listdir(destination_folder)
+
+        # Extraer archivos si hay un archivo zip o rar
+        for archivo in archivos_descargados:
+            archivo_path = os.path.join(destination_folder, archivo)
+
+            # Comprobar si el archivo es un zip
+            if archivo.endswith('.zip'):
+                with zipfile.ZipFile(archivo_path, 'r') as zip_ref:
+                    zip_ref.extractall(destination_folder)
+                print(f'{Fore.GREEN}Archivo zip extraído: {archivo}{Style.RESET_ALL}')
+                actualizar_mods()
+    
+
+                
+            # Comprobar si el archivo es un rar
+            elif archivo.endswith('.rar'):
+                with rarfile.RarFile(archivo_path) as rar_ref:
+                    rar_ref.extractall(destination_folder)
+                print(f'{Fore.GREEN}Archivo rar extraído: {archivo}{Style.RESET_ALL}')
+                actualizar_mods()
+                
+    except subprocess.CalledProcessError as e:
+        print(f"{Fore.RED}Error al ejecutar el comando: {e}{Style.RESET_ALL}")
+    except zipfile.BadZipFile:
+        print(f"{Fore.RED}Error: El archivo {archivo} no es un zip válido.{Style.RESET_ALL}")
+    except rarfile.RarCannotExec:
+        print(f"{Fore.RED}Error: No se puede ejecutar rar. Asegúrate de que esté instalado.{Style.RESET_ALL}")
+    except Exception as e:
+        print(f"{Fore.RED}Se produjo un error: {e}{Style.RESET_ALL}")
+
+
+def importar_mundo(destination_folder='worlds'):
+    formatear_carpeta()
+    # Comprobar y crear la carpeta de destino si no existe
+    if not os.path.exists(destination_folder):
+        os.makedirs(destination_folder)
+        
+
+    # Preparar el comando para ejecutar mediafire-dl
+    url = input("Coloca tu link de mediafire | El rar o el zip debe contener todos los archivos del mundo\n:")
+    command = ['mediafire-dl', url]
+    
+    try:
+        # Ejecutar el comando
+        subprocess.run(command, check=True, cwd=destination_folder)
+        print(f'\n{Fore.RED}Archivo descargado y guardado en {destination_folder}{Style.RESET_ALL}')
+        
+        # Listar los archivos en la carpeta de destino
+        archivos_descargados = os.listdir(destination_folder)
+
+        # Extraer archivos si hay un archivo zip o rar
+        for archivo in archivos_descargados:
+            archivo_path = os.path.join(destination_folder, archivo)
+
+            # Comprobar si el archivo es un zip
+            if archivo.endswith('.zip'):
+                with zipfile.ZipFile(archivo_path, 'r') as zip_ref:
+                    zip_ref.extractall(destination_folder)
+                print(f'{Fore.GREEN}Archivo zip extraído: {archivo}{Style.RESET_ALL}')
+        
+                actualizar_mundo()
+            # Comprobar si el archivo es un rar
+            elif archivo.endswith('.rar'):
+                with rarfile.RarFile(archivo_path) as rar_ref:
+                    rar_ref.extractall(destination_folder)
+                print(f'{Fore.GREEN}Archivo rar extraído: {archivo}{Style.RESET_ALL}')
+                
+                actualizar_mundo()
+
+    except subprocess.CalledProcessError as e:
+        print(f'Error al descargar el archivo: {e}')
+    except FileNotFoundError:
+        print(Fore.RED + "El comando 'mediafire-dl' no se encuentra. Asegúrate de que esté instalado y en tu PATH." + Style.RESET_ALL)
+    except Exception as e:
+        print(Fore.RED + f'Ocurrió un error: {e}' + Style.RESET_ALL)
+    
+    except subprocess.CalledProcessError as e:
+        print(f'Error al descargar el archivo: {e}')
+    except FileNotFoundError:
+        print(Fore.RED + "El comando 'mediafire-dl' no se encuentra. Asegúrate de que esté instalado y en tu PATH.")
+    except (zipfile.BadZipFile, rarfile.Error) as e:
+        print(f'Error al extraer el archivo: {e}')
 
 
 # Bloque 2: Función para extraer archivos .rar
@@ -361,6 +473,77 @@ def extraer_zip(zip_path, destino):
             print(f'Archivos extraídos de {zip_path} en: {destino}')
     except zipfile.BadZipFile as e:
         print(f'Error al extraer el archivo .zip: {e}')
+
+def formatear_carpeta(destination_folder='worlds'):
+    """Elimina el contenido de la carpeta de destino sin eliminar la carpeta en sí."""
+    if os.path.exists(destination_folder):
+        # Eliminar todos los archivos y carpetas dentro de la carpeta de destino
+        for item in os.listdir(destination_folder):
+            item_path = os.path.join(destination_folder, item)
+            if os.path.isfile(item_path):
+                os.remove(item_path)  # Eliminar archivos
+            elif os.path.isdir(item_path):
+                shutil.rmtree(item_path)  # Eliminar directorios
+    
+def actualizar_mundo(destination_folder='worlds'):
+    # Ruta del archivo de configuración
+    config_path = '/workspaces/TSA/server/serverconfig.txt'
+    
+    # Buscar el archivo .wld en la carpeta de destino
+    wld_files = [f for f in os.listdir(destination_folder) if f.endswith('.wld')]
+    
+    if not wld_files:
+        print(f"{Fore.RED}No se encontraron archivos .wld en {destination_folder}.{Style.RESET_ALL}")
+        return
+    
+    # Obtener la dirección del primer archivo .wld encontrado
+    wld_file = wld_files[0]
+    wld_file_path = os.path.abspath(os.path.join(destination_folder, wld_file))
+    
+    # Leer el contenido del archivo de configuración
+    with open(config_path, 'r') as config_file:
+        lines = config_file.readlines()
+
+    # Reemplazar la línea existente que comienza con "world="
+    for i, line in enumerate(lines):
+        if line.startswith("world="):
+            lines[i] = f"world={wld_file_path}\n"  # Reemplazar la línea
+            break
+    else:
+        # Si no se encontró una línea existente, agregarla (opcional)
+        lines.append(f"world={wld_file_path}\n")
+
+    # Escribir el contenido actualizado de nuevo en el archivo
+    with open(config_path, 'w') as config_file:
+        config_file.writelines(lines)
+
+    print(f'{Fore.MAGENTA}La dirección del archivo .wld "{wld_file_path}" se ha actualizado en {config_path}.{Style.RESET_ALL}')
+
+def actualizar_mods(destination_folder='mods'):
+    # Ruta del archivo de configuración
+    config_path = '/workspaces/TSA/server/serverconfig.txt'
+
+    # Obtener la ruta de la carpeta de mods
+    mod_folder_path = os.path.abspath(destination_folder)
+    
+    # Leer el contenido del archivo de configuración
+    with open(config_path, 'r') as config_file:
+        lines = config_file.readlines()
+
+    # Reemplazar la línea existente que comienza con "modpath="
+    for i, line in enumerate(lines):
+        if line.startswith("modpath="):
+            lines[i] = f"modpath={mod_folder_path}\n"  # Reemplazar la línea
+            break
+    else:
+        # Si no se encontró una línea existente, agregarla (opcional)
+        lines.append(f"modpath={mod_folder_path}\n")
+
+    # Escribir el contenido actualizado de nuevo en el archivo
+    with open(config_path, 'w') as config_file:
+        config_file.writelines(lines)
+
+    print(f'{Fore.MAGENTA}La ruta de los mods se ha actualizado en {config_path}.{Style.RESET_ALL}')
 
 
         
