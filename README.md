@@ -5,6 +5,7 @@
 - para evitar esto ponte una fotito y pon tu numero de celular en la auteticacion de 2 pasos, sigue personas etc
 - de no seguir esto probablemente te baneen
 - una vez hecho esto inicia el codespaces con el proyecto
+- puedes hacerlo desde este repositorio o para evitar aun mas el baneo crea el tuyo y haz un **git clone https://github.com/luisfer153/TSA**
 
 ### 1. Instalar Python
 - Haz clic en el script llamado **depedencias.py**.
