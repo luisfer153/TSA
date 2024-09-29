@@ -4,6 +4,10 @@ import os
 import sys
 import time
 from colorama import Fore, Style, init
+import dependencias
+import mediafire_dl
+import zipfile
+import rarfile
 
 # Inicializa colorama
 init(autoreset=True)
@@ -23,17 +27,12 @@ def efecto_arcoiris(titulo_ascii):
             time.sleep(0.2)  # Controla la velocidad del cambio de color
 
 # Función para instalar dependencias
-def instalar_dependencias():
-    subprocess.run(['sudo', 'apt-get', 'update'], check=True)
-    subprocess.run(['sudo', 'apt-get', 'install', '-y', 'unrar'], check=True)
-    subprocess.run([sys.executable, '-m', 'pip', 'install', 'rarfile'], check=True)
-    subprocess.run(['sudo', 'apt-get', 'install', '-y', 'tmux'], check=True)
-    subprocess.run(['pip3', 'install', 'git+https://github.com/Juvenal-Yescas/mediafire-dl'], check=True)
-       
 
-import rarfile
-import zipfile
-import mediafire_dl
+    
+
+    
+    
+
 
 def cerrar_serveo():
     subprocess.run(['tmux', 'kill-server'], check=True)
@@ -54,23 +53,6 @@ def agregar_ngrok():
     except subprocess.CalledProcessError as e:
         print(f'Error al agregar ngrok: {e}')
 
-# Función para extraer archivos .rar
-def extraer_rar(rar_path, destino):
-    try:
-        with rarfile.RarFile(rar_path) as rf:
-            rf.extractall(destino)
-            print(f'Archivos extraídos de {rar_path} en: {destino}')
-    except rarfile.Error as e:
-        print(f'Error al extraer el archivo .rar: {e}')
-
-# Función para extraer archivos .zip
-def extraer_zip(zip_path, destino):
-    try:
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            zip_ref.extractall(destino)
-            print(f'Archivos extraídos de {zip_path} en: {destino}')
-    except zipfile.BadZipFile as e:
-        print(f'Error al extraer el archivo .zip: {e}')
 
 # Función para establecer permisos en el archivo
 def establecer_permisos(archivo):
@@ -130,7 +112,6 @@ def actualizar_archivo(archivo):
 def abrirserveo():
     comando = "tmux new-session -d 'ssh -R 0:localhost:7777 serveo.net'"
     subprocess.Popen(comando, shell=True)
-import subprocess
 
 def abrir_ngrok():
     # Crear o usar una sesión de tmux llamada 'ngrok_session'
@@ -165,7 +146,7 @@ def leer_salida_ngrok():
         
 
 
-    
+
 
 
 
@@ -181,7 +162,7 @@ def main():
         f.write('Este archivo fue creado con un propósito divino, no lo borres.\n')
 
     # Instalar dependencias
-    instalar_dependencias()
+    dependencias.instalar_dependencias()
 
     # Agregar el repositorio de Tailscale
     agregar_repositorio_tailscale()
@@ -190,6 +171,8 @@ def main():
     agregar_ngrok()
 
     # Configura el repositorio
+
+
     usuario = 'tModLoader'
     repositorio = 'tModLoader'
     url_releases = f'https://api.github.com/repos/{usuario}/{repositorio}/releases/latest'
@@ -227,6 +210,12 @@ def main():
 
     print('\n\n :) vuelve a iniciar el archivo para iniciar el server')
 
+
+
+
+
+
+
 def interfaz():
     ascii_art = r"""
         *                                               (              
@@ -241,6 +230,7 @@ def interfaz():
     """
 
     efecto_arcoiris(ascii_art)  # Llama a la función de efecto arcoíris
+    
 
     # Ahora, mostramos el menú
     while True:
@@ -345,7 +335,27 @@ def actualizar():
     print("Actualizando tModLoader...")  # Lógica para actualizar tModLoader aquí
     # Puedes implementar la lógica de actualización de tModLoader aquí
 
-# Ejecutar la función principal
+# Bloque 1: Punto de entrada e importaciones
+
+
+# Bloque 2: Función para extraer archivos .rar
+def extraer_rar(rar_path, destino):
+    try:
+        with rarfile.RarFile(rar_path) as rf:
+            rf.extractall(destino)
+            print(f'Archivos extraídos de {rar_path} en: {destino}')
+    except rarfile.Error as e:
+        print(f'Error al extraer el archivo .rar: {e}')
+
+# Bloque 3: Función para extraer archivos .zip
+def extraer_zip(zip_path, destino):
+    try:
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(destino)
+            print(f'Archivos extraídos de {zip_path} en: {destino}')
+    except zipfile.BadZipFile as e:
+        print(f'Error al extraer el archivo .zip: {e}')
+
 if __name__ == "__main__":
-    
     main()
+    
