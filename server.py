@@ -4,10 +4,11 @@ import os
 import sys
 import time
 from colorama import Fore, Style, init
-import dependencias
+from colorama import Fore, Style
 import mediafire_dl
 import zipfile
 import rarfile
+
 
 # Inicializa colorama
 init(autoreset=True)
@@ -37,6 +38,8 @@ def efecto_arcoiris(titulo_ascii):
 def cerrar_serveo():
     subprocess.run(['tmux', 'kill-server'], check=True)
     print("Se ha cerrado serveo")
+
+
 
 # Función para agregar el repositorio de Tailscale
 def agregar_repositorio_tailscale():
@@ -161,14 +164,17 @@ def main():
     with open(archivo_txt, 'w') as f:
         f.write('Este archivo fue creado con un propósito divino, no lo borres.\n')
 
-    # Instalar dependencias
-    dependencias.instalar_dependencias()
 
     # Agregar el repositorio de Tailscale
     agregar_repositorio_tailscale()
 
     # Agregar ngrok
+
     agregar_ngrok()
+
+    
+
+
 
     # Configura el repositorio
 
@@ -208,9 +214,9 @@ def main():
     else:
         print(f'Error al obtener la última release: {response.status_code}')
 
-    print('\n\n :) vuelve a iniciar el archivo para iniciar el server')
+    
 
-
+    print(Fore.RED + '\n\n :) vuelve a iniciar el archivo para iniciar el server')
 
 
 
@@ -356,6 +362,8 @@ def extraer_zip(zip_path, destino):
     except zipfile.BadZipFile as e:
         print(f'Error al extraer el archivo .zip: {e}')
 
+
+        
 if __name__ == "__main__":
     main()
     

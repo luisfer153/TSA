@@ -1,0 +1,5 @@
+1. Primero ejecuta el script de dependencias.py y luego el de server.py
+3. cuando cierres puedes volver a abrir solo el server.py
+2. ya es toda we
+3. puedes interactar con la carpeta server sin ningun problema
+4. puedes meter y sacar manualmente los mundos desde la carpeta server o desde el programa
