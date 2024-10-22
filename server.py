@@ -189,10 +189,12 @@ def leer_salida_ngrok():
 # Función principal
 def main():
     archivo_txt = "archivo.txt"
-
+    
     if os.path.exists(archivo_txt):
         print(f"Ninguna novedad")
+       
         interfaz()
+        
 
     with open(archivo_txt, "w") as f:
         f.write("Este archivo fue creado con un propósito divino, no lo borres.\n")
@@ -265,7 +267,7 @@ def interfaz():
 
     # Ahora, mostramos el menú
     while True:
-
+        
         print(
             f"{Fore.RED}Solo puedes tener (1) mundo a la vez si usas la aplicación. "
             f"De manera manual se pueden tener varios mundos, mira el tutorial para ver cómo ;) "
@@ -289,6 +291,10 @@ def interfaz():
         )
         print("7. salir")
 
+        print(
+            f"\n\n8. {Fore.LIGHTGREEN_EX}descargar mundo | {Fore.LIGHTBLUE_EX}se generara un archivo {Fore.RED}'empaquetado'{Fore.LIGHTBLUE_EX} dale click derecho, descargar"
+        )
+
         opcion = input("Selecciona una opción (1-5): ")
 
         if opcion == "1":
@@ -310,6 +316,11 @@ def interfaz():
         elif opcion == "7":
             print("saliendo....")
             sys.exit()
+
+        elif opcion == "8":
+            empaquetar_mundo()
+            print("se generar un archivo rar en la carpeta word con el nombre 'empaquetado' dale click derecho, descargar")
+            time.sleep(10)
 
         else:
             print("Opción inválida. Por favor, selecciona una opción válida.")
@@ -659,15 +670,33 @@ def actualizar_mundo(destination_folder="worlds"):
 
 
 def actualizar_mods(destination_folder="mods"):
-    # Ruta del archivo de configuración
-    config_path = "server/serverconfig.txt"
+    version = obtener_version_tmodloader()
+    if version is None:
+        print("No se encontró la versión de tModLoader en el archivo.")
+        return
+
+    if version == "1.4.4":
+        config_path = "server/serverconfig.txt"
+    elif version == "1.4.3":
+        config_path = "1.4.3/serverconfig.txt"
+    elif version == "1.3.5.3":
+        descargar_configuracion()
+        config_path = "1.3.5.3/serverconfig.txt"
+    else:
+        print("Versión no reconocida.")
+        return
 
     # Obtener la ruta de la carpeta de mods
     mod_folder_path = os.path.abspath(destination_folder)
 
-    # Leer el contenido del archivo de configuración
-    with open(config_path, "r") as config_file:
-        lines = config_file.readlines()
+    # Intentar leer el archivo de configuración con manejo de errores
+    try:
+        with open(config_path, "r", encoding="utf-8") as config_file:
+            lines = config_file.readlines()
+    except UnicodeDecodeError:
+        # Si falla, intenta abrirlo con ISO-8859-1
+        with open(config_path, "r", encoding="ISO-8859-1") as config_file:
+            lines = config_file.readlines()
 
     # Reemplazar la línea existente que comienza con "modpath="
     for i, line in enumerate(lines):
@@ -675,16 +704,13 @@ def actualizar_mods(destination_folder="mods"):
             lines[i] = f"modpath={mod_folder_path}\n"  # Reemplazar la línea
             break
     else:
-        # Si no se encontró una línea existente, agregarla (opcional)
         lines.append(f"modpath={mod_folder_path}\n")
 
     # Escribir el contenido actualizado de nuevo en el archivo
-    with open(config_path, "w") as config_file:
+    with open(config_path, "w", encoding="utf-8") as config_file:
         config_file.writelines(lines)
 
-    print(
-        f"{Fore.MAGENTA}La ruta de los mods se ha actualizado en {config_path}.{Style.RESET_ALL}"
-    )
+    print(f'La ruta de los mods se ha actualizado en {config_path}.')
 
 
 def inciar_tailscale():
@@ -913,6 +939,28 @@ def dar_permisos_a_carpeta(ruta_carpeta):
         print(f"Permisos otorgados a la carpeta: {ruta_carpeta}")
     except subprocess.CalledProcessError as e:
         print(f"Error al cambiar permisos: {e}")
+
+def empaquetar_mundo(carpeta="worlds", nombre_archivo="empaquetado.rar"):
+    # Verificar si la carpeta existe
+    if not os.path.exists(carpeta):
+        print(f"La carpeta {carpeta} no existe.")
+        return
+
+    # Ruta absoluta de la carpeta
+    carpeta_path = os.path.abspath(carpeta)
+
+    # Comando para comprimir en formato RAR
+    comando = ["rar", "a", nombre_archivo, carpeta_path]
+
+    try:
+        # Ejecutar el comando de compresión
+        subprocess.run(comando, check=True)
+        print(f"La carpeta {carpeta} se ha comprimido en {nombre_archivo}")
+    except subprocess.CalledProcessError as e:
+        print(f"Error al intentar comprimir la carpeta: {e}")
+
+
+
 
 
 if __name__ == "__main__":

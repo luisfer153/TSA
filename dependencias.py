@@ -9,6 +9,7 @@ def instalar_dependencias():
     subprocess.run([sys.executable, '-m', 'pip', 'install', 'rarfile'], check=True)
     subprocess.run(['sudo', 'apt-get', 'install', '-y', 'tmux'], check=True)
     subprocess.run(['pip3', 'install', 'git+https://github.com/Juvenal-Yescas/mediafire-dl'], check=True)
+    subprocess.run("sudo apt-get update && sudo apt-get install -y rar", shell=True, check=True)
 
     # Imprimir el mensaje en color rojo
     print(Fore.RED + "\nDependencias instaladas, ya puedes ejecutar el server.py")
