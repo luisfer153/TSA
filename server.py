@@ -358,6 +358,12 @@ def abrir_server(ruta_archivo):
                     print(f"Versión encontrada: {version}")
                     ejecutar_script(version)
                     return
+                else:
+                    print(f"{Fore.RED}no se especifico version se usara la ultima")
+                    ejecutar_script("1.4.4")
+                
+        
+                    
     except FileNotFoundError:
         print(f"El archivo {ruta_archivo} no fue encontrado.")
     except Exception as e:
