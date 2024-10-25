@@ -276,7 +276,7 @@ def interfaz():
         )
         print("\n")
         print("1. Iniciar server")
-        print(f"2. Programa de conexión |{Fore.CYAN} configura esto primero ")
+        print(f"2. Programa de conexión |{Fore.CYAN} Elige antes de iniciar el server ")
         print(
             f"3. Actualizar tmod |{Fore.RED} ojito {Fore.CYAN}| deberas importar tus mundos y tus mods denuevo"
         )
@@ -287,7 +287,7 @@ def interfaz():
             f"5. importar mods | {Fore.GREEN}primero sube tus mods a mediafire | {Style.RESET_ALL}"
         )
         print(
-            f"6. {Fore.LIGHTBLUE_EX}Usar otra version de tmoloader|{Fore.RED} ojito {Fore.CYAN}| deberas importar tus mundos y tus mods denuevo"
+            f"6. {Fore.LIGHTBLUE_EX}Elegir version de tmodloader|{Fore.RED} Configura esto primero {Fore.CYAN}| deberas importar tus mundos y tus mods denuevo"
         )
         print("7. salir")
 
