@@ -27,7 +27,6 @@ def efecto_arcoiris(titulo_ascii):
             time.sleep(0.2)  # Controla la velocidad del cambio de color
 
 
-# Función para instalar dependencias
 
 
 def cerrar_serveo():
@@ -116,8 +115,8 @@ def abrirserveo():
     output_file = "serveoip.log"
 
     # Crear el archivo vacío si no existe
-    if not os.path.exists(output_file):
-        open(output_file, "w").close()
+    with open(output_file, "a"):
+        pass  # Crea el archivo si no existe
 
     # Comando que quieres ejecutar en una nueva sesión de tmux
     comando = f"ssh -R 0:localhost:7777 serveo.net > {output_file} 2>&1"
@@ -143,11 +142,20 @@ def abrirserveo():
         with open(log_file_path, "r") as log_file:
             contenido = log_file.read()  # Leer todo el contenido del archivo
             print(contenido)  # Imprimir el contenido
-            print(f"{Fore.CYAN}\nPuedes revisar la IP en el archivo 'serveoip.log'")
+
+           
+            if "Connection refused" in contenido:
+                print(f"{Fore.RED}El servidor está caído o no está disponible, usa otra alternativa mientras")
+                time.sleep(5)
+            else:
+                print(f"{Fore.CYAN}\nPuedes revisar la IP en el archivo 'serveoip.log'")
+
     except FileNotFoundError:
         print(f"El archivo {log_file_path} no existe.")
+    except PermissionError:
+        print(f"No tienes permiso para acceder a {log_file_path}.")
     except Exception as e:
-        print(f"Ocurrió un error: {e}")
+        print(f"Ocurrió un error inesperado: {e}")
 
 
 def abrir_ngrok():
@@ -198,6 +206,8 @@ def main():
 
     with open(archivo_txt, "w") as f:
         f.write("Este archivo fue creado con un propósito divino, no lo borres.\n")
+        f.write("tmodloaderversion:1.4.4\n")
+    
 
     # Agregar el repositorio de Tailscale
     agregar_repositorio_tailscale()
@@ -319,7 +329,7 @@ def interfaz():
 
         elif opcion == "8":
             empaquetar_mundo()
-            print("se generar un archivo rar en la carpeta word con el nombre 'empaquetado' dale click derecho, descargar")
+            print("se generar un archivo rar en la carpeta world con el nombre 'empaquetado' dale click derecho, descargar")
             time.sleep(10)
 
         else:
@@ -358,16 +368,12 @@ def abrir_server(ruta_archivo):
                     print(f"Versión encontrada: {version}")
                     ejecutar_script(version)
                     return
-                else:
-                    print(f"{Fore.RED}no se especifico version se usara la ultima")
-                    ejecutar_script("1.4.4")
-                
-        
-                    
+            
+            # Si no se encuentra la versión, usar la versión predeterminada
+            print("No se especificó versión; se usará la última")
+            ejecutar_script("1.4.4")
     except FileNotFoundError:
-        print(f"El archivo {ruta_archivo} no fue encontrado.")
-    except Exception as e:
-        print(f"Se produjo un error al leer el archivo: {e}")
+        print("Archivo no encontrado.")
 
 
 def conexion():
@@ -591,8 +597,7 @@ def formatear_carpeta(destination_folder="worlds"):
                 shutil.rmtree(item_path)  # Eliminar directorios
 
 
-import os
-import requests
+
 
 
 def obtener_version_tmodloader():
