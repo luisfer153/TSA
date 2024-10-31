@@ -12,4 +12,7 @@
 7. si compartes tu cuenta de tailscale hasta 100 personas pueden usarla
 
 
+Si sabes que 'existe' y quieres descargar 
+una actualizacion el programa escribe en la terminal "git pull"
+
 mira el video para informacion util ;)
