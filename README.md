@@ -1,6 +1,6 @@
 # 💻 REGLAS 🌳
 
-### 0. ponte vergas
+### 0. Antes de empezar
 - github tambien es una red social tiene un algoritmo de BANEOS, si recien creaste una cuenta e inicias un codespaces algo raro esta sucediendo, lo toma como que te quieres aprovechar de sus servicios
 - para evitar esto ponte una fotito y pon tu numero de celular en la auteticacion de 2 pasos, sigue personas etc
 - de no seguir esto probablemente te baneen
