@@ -10,6 +10,8 @@ import zipfile
 import rarfile
 
 
+
+
 # Inicializa colorama
 init(autoreset=True)
 
@@ -290,10 +292,10 @@ def interfaz():
             f"3. Actualizar tmod |{Fore.RED} ojito {Fore.CYAN}| deberas importar tus mundos y tus mods denuevo"
         )
         print(
-            f"4. Importar mundo | {Fore.GREEN}primero sube tu mundo a mediafire | {Style.RESET_ALL}"
+            f"4. Importar mundo | {Fore.GREEN}primero sube tu mundo a mediafire o cualquier host | {Style.RESET_ALL}"
         )
         print(
-            f"5. importar mods | {Fore.GREEN}primero sube tus mods a mediafire | {Style.RESET_ALL}"
+            f"5. importar mods | {Fore.GREEN}primero sube tus mods a mediafire o cualquier host| {Style.RESET_ALL}"
         )
         print(
             f"6. {Fore.LIGHTBLUE_EX}Elegir version de tmodloader|{Fore.RED} Configura esto primero {Fore.CYAN}| deberas importar tus mundos y tus mods denuevo"
@@ -303,8 +305,14 @@ def interfaz():
         print(
             f"\n\n8. {Fore.LIGHTGREEN_EX}descargar mundo | {Fore.LIGHTBLUE_EX}se generara un archivo {Fore.RED}'empaquetado'{Fore.LIGHTBLUE_EX} dale click derecho, descargar"
         )
+        print(
+            f"9. {Fore.LIGHTGREEN_EX}Actualizar TSA | {Fore.LIGHTBLUE_EX}se descargara la ultima version del programa, se recomienda hacer copia de seguridad"
+        )
+        print(
+            f"10. {Fore.LIGHTGREEN_EX}Configurar mundos compartidos | {Fore.LIGHTBLUE_EX}vincula tus equipos para que el mundo y los mods sean el mismo en todos{Fore.LIGHTRED_EX}[Beta]\033]8;;https://example.com\033\\[Tuto]\033]8;;\033\\"
+        )
 
-        opcion = input("Selecciona una opción (1-5): ")
+        opcion = input("Selecciona una opción (1-10): ")
 
         if opcion == "1":
             abrir_server("archivo.txt")
@@ -331,6 +339,14 @@ def interfaz():
             print("se generar un archivo rar en la carpeta world con el nombre 'empaquetado' dale click derecho, descargar")
             time.sleep(10)
 
+        elif opcion == "9":
+            actualizar_programa()
+        
+        elif opcion == "15":
+            iniciar_syncthing()
+            print(f"{Fore.RED}Se inicio syncthing si haces 'Ctrl + c' se cerrara pero si sales con 7 se ejecutara en segundo plano")
+            time.sleep(15)
+                      
         else:
             print("Opción inválida. Por favor, selecciona una opción válida.")
 
@@ -970,7 +986,13 @@ def empaquetar_mundo(carpeta="worlds", nombre_archivo="empaquetado.rar"):
         print(f"Error al intentar comprimir la carpeta: {e}")
 
 
+def actualizar_programa():
+     subprocess.run(['git', 'pull'], check=True)
 
+def iniciar_syncthing():
+    subprocess.Popen(["syncthing"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    
+            
 
 
 if __name__ == "__main__":

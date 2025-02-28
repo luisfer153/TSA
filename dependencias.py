@@ -22,6 +22,10 @@ def instalar_dependencias():
             subprocess.run(['sudo', 'apt-get', 'install', '-y', 'unrar'], check=True)
             subprocess.run(['sudo', 'apt-get', 'install', '-y', 'tmux'], check=True)
             subprocess.run(['sudo', 'apt-get', 'install', '-y', 'rar'], check=True)
+            subprocess.run(['sudo', 'apt-get', 'install', '-y', 'syncthing'], check=True)
+
+                 
+
         elif package_manager in ['yum', 'dnf']:
             # Comandos para distribuciones basadas en Red Hat (CentOS, RHEL, Rocky)
             subprocess.run(['sudo', package_manager, 'update', '-y'], check=True)
@@ -32,7 +36,9 @@ def instalar_dependencias():
         # Comandos comunes (independientes del gestor de paquetes)
         subprocess.run([sys.executable, '-m', 'pip', 'install', '--upgrade', 'pip'], check=True)
         subprocess.run([sys.executable, '-m', 'pip', 'install', 'rarfile'], check=True)
-        subprocess.run(['pip3', 'install', 'git+https://github.com/Juvenal-Yescas/mediafire-dl'], check=True)
+        subprocess.run([sys.executable, '-m', 'pip', 'install', 'rarfile'], check=True)
+        subprocess.run([sys.executable, '-m', 'pip', 'install', 'rich'], check=True)
+
 
         # Imprimir mensaje en color rojo
         print(Fore.RED + "\nDependencias instaladas, ya puedes ejecutar el server.py")
