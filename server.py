@@ -6,7 +6,6 @@ import sys
 import time
 from colorama import Fore, Style, init
 from colorama import Fore, Style
-import mediafire_dl
 import zipfile
 import rarfile
 
@@ -458,7 +457,7 @@ def importar_mods(destination_folder="mods"):
     url = input(
         "Coloca tu link de mediafire | la raiz del rar o del el zip debe contener los mods \n:"
     )
-    command = ["mediafire-dl", url]
+    command = ["wget", "--content-disposition", url]
 
     try:
         # Ejecutar el comando
@@ -512,7 +511,7 @@ def importar_mundo(destination_folder="worlds"):
     url = input(
         "Coloca tu link de mediafire | El rar o el zip debe contener todos los archivos del mundo en la raiz\n:"
     )
-    command = ["mediafire-dl", url]
+    command = ["wget", "--content-disposition", url]
 
     try:
         # Ejecutar el comando
