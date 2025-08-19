@@ -6,7 +6,11 @@ import os
 
 def instalar_dependencias():
     # Detecta el gestor de paquetes adecuado
-    if os.path.exists('/usr/bin/apt-get'):
+    FLAG_FILE = "archivo.txt"
+    if os.path.exists(FLAG_FILE): 
+     print(Fore.RED + "\nYa las depedencias fueron instaladas, borre el archivo.txt para reinstalar perdera toda la config")
+     return
+    elif os.path.exists('/usr/bin/apt-get'):
         package_manager = 'apt-get'
     elif os.path.exists('/usr/bin/yum'):
         package_manager = 'yum'
@@ -34,10 +38,10 @@ def instalar_dependencias():
             subprocess.run(['sudo', package_manager, 'install', '-y', 'rar'], check=True)
 
         # Comandos comunes (independientes del gestor de paquetes)
-        subprocess.run([sys.executable, '-m', 'pip', 'install', '--upgrade', 'pip'], check=True)
-        subprocess.run([sys.executable, '-m', 'pip', 'install', 'rarfile'], check=True)
-        subprocess.run([sys.executable, '-m', 'pip', 'install', 'rarfile'], check=True)
-        subprocess.run([sys.executable, '-m', 'pip', 'install', 'rich'], check=True)
+        subprocess.run([sys.executable, '-m', 'pip', 'install', '--upgrade', 'pip', '--break-system-packages'], check=True)
+        subprocess.run([sys.executable, '-m', 'pip', 'install', 'rarfile', '--break-system-packages'], check=True)
+        subprocess.run([sys.executable, '-m', 'pip', 'install', 'rarfile', '--break-system-packages'], check=True)
+        subprocess.run([sys.executable, '-m', 'pip', 'install', 'rich', '--break-system-packages'], check=True)
 
 
         # Imprimir mensaje en color rojo

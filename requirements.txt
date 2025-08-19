@@ -2,7 +2,6 @@ certifi==2024.12.14
 charset-normalizer==3.4.1
 colorama==0.4.6
 idna==3.10
-mediafire-dl @ git+https://github.com/Juvenal-Yescas/mediafire-dl@5873ecf1601f1cedc10a933a3a00d340d0f02db3
 rarfile==4.2
 requests==2.32.3
 six==1.17.0
