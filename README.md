@@ -1,7 +1,7 @@
 
 ---
 
-# TSA – Terraria Server Administrator
+# TSA – Tmodloader Server Administrator
 
 A CLI tool to manage **tModLoader servers** with an easy way to switch between different tModLoader versions while keeping the same configuration of mods, worlds, and plugins across multiple machines.
 
