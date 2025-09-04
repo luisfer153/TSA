@@ -15,7 +15,7 @@ This project started as a simple way to use **GitHub Codespaces** with different
 
 ## Usage
 
-TSA is written in **Python 3.11.0**. There are three ways to use it:
+TSA is written in **Python 3.12.0**. There are three ways to use it:
 
 ### 1. Debugging Version
 
