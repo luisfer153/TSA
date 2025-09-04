@@ -1,35 +1,68 @@
-# 💻 REGLAS 🌳
-
-### 0. Antes de empezar
-- github tambien es una red social tiene un algoritmo de BANEOS, si recien creaste una cuenta e inicias un codespaces algo raro esta sucediendo, lo toma como que te quieres aprovechar de sus servicios
-- para evitar esto ponte una fotito y pon tu numero de celular en la auteticacion de 2 pasos, sigue personas etc
-- de no seguir esto probablemente te baneen
-- una vez hecho esto inicia el codespaces con el proyecto
-- puedes hacerlo desde este repositorio o para evitar aun mas el baneo crea el tuyo y haz un **git clone https://github.com/luisfer153/TSA**
-
-### 1. Instalar Python
-- Haz clic en el script llamado **depedencias.py**.
-- Aparecerá un recuadro que te preguntará si deseas instalar Python. Selecciona **"Install"**.
-- Se abrirá una nueva pestaña donde se instalará Python automáticamente.
-- Una vez completado, ciérrala.
-
-### 2. Ejecutar scripts
-- Ahora, vuelve a hacer clic en el script **depedencias.py**.
-- Aparecerá una flechita en la parte superior derecha. Haz clic en ella y espera a que cargue.
-- Usa el mismo proceso con el archivo **server.py**.
-
-### 3. Iniciar el servidor
-- Cuando termines todo y quieras volver a abrir el servidor, simplemente ejecuta **server.py**.
-
-### 4. Interacción con la carpeta **server**
-- Puedes interactuar con la carpeta **server** sin ningún problema.
-
-### 5. Gestión de mundos
-- Puedes agregar o quitar manualmente los mundos desde la carpeta **server** o hacerlo directamente desde el programa.
-
-### 6. Compartir cuenta de Tailscale
-- Si compartes tu cuenta de **Tailscale**, hasta **100 personas** pueden usarla.
 
 ---
 
-🎥 **Mira el video para más información útil! 😉**
+# TSA – Terraria Server Administrator
+
+A CLI tool to manage **tModLoader servers** with an easy way to switch between different tModLoader versions while keeping the same configuration of mods, worlds, and plugins across multiple machines.
+
+---
+
+## Why
+
+This project started as a simple way to use **GitHub Codespaces** with different proxy/VPN providers (since Codespaces doesn’t support port forwarding). Over time, additional functionalities were added to simplify server administration and mod handling.
+
+---
+
+## Usage
+
+TSA is written in **Python 3.11.0**. There are three ways to use it:
+
+### 1. Debugging Version
+
+* Run `dependencies.py` to install pip dependencies.
+* Run `server.py` to install/update system dependencies and VPN providers. Once installation is complete, re-run `server.py` to initialize the program.
+* Optionally, use `inciador.py` to start the server with third-party remote services such as **Wake-on-WAN**.
+* All files are placed in the main directory.
+
+### 2. SoloRun Version
+
+A combined script that executes all steps in order automatically.
+
+### 3. Compiled Version
+
+A single executable compiled with **PyArmor**, available in the **Releases** tab.
+This version runs everything in one binary without leaving residual files in the directory.
+
+---
+
+## Notes (2025 Update)
+
+* **Direct links**: MediaFire and similar services may change their URL formats. Always use the **direct download link** (e.g., copy the link from the green/blue download button).
+* **Mods not appearing?**
+
+  * Mods must be in the root of the `.rar` file (same for worlds).
+  * The program respects tModLoader **modpacks**. If you’ve never created one, check the *Mod Packs* section inside tModLoader.
+  * tModLoader generates an `enable.json` file next to your mods, listing active mods. This file **must be included**. If not, you can enable mods manually from the program (`M: modlist → E: enable all → R: reload and return`).
+  * If you imported a world, you cannot modify mod activation before server startup.
+
+---
+
+## Troubleshooting
+
+1. **Incompatible Mods**
+
+   * Some mods (e.g., *Calamity Music*, translation packs) are not updated at the same pace as the main mod. You may need to remove conflicting ones.
+   * Note: A mod may work on the client but still fail on the server.
+
+2. **Wrong Version of Mods**
+
+   * Supported tModLoader versions match Steam releases:
+
+     * `1.3.5.3 – tModLoader v0.11.8.9`
+     * `1.4.3 – tModLoader v2022.9.47.87`
+     * `1.4.x – Latest available version of tModLoader` (auto-updates, which may be newer than Steam’s version—be cautious when updating).
+
+---
+
+
+
