@@ -15,20 +15,13 @@ This project started as a simple way to use **GitHub Codespaces** with different
 
 ## Usage
 
-TSA is written in **Python 3.12.0**. There are three ways to use it:
+TSA is written in **Python 3.12.0**. There are two ways to use it:
 
-### 1. Debugging Version
-
-* Run `dependencies.py` to install pip dependencies.
-* Run `server.py` to install/update system dependencies and VPN providers. Once installation is complete, re-run `server.py` to initialize the program.
-* Optionally, use `inciador.py` to start the server with third-party remote services such as **Wake-on-WAN**.
-* All files are placed in the main directory.
-
-### 2. SoloRun Version
+### 1. SoloRun Version
 
 A combined script that executes all steps in order automatically.
 
-### 3. Compiled Version
+### 2. Compiled Version
 
 A single executable compiled with **PyArmor**, available in the **Releases** tab.
 This version runs everything in one binary without leaving residual files in the directory.
