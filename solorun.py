@@ -1,26 +1,44 @@
 import subprocess
 import sys
 import colorama
-from colorama import Fore, Style
 import os
 import shutil
-import subprocess
 import requests
-import sys
 import time
 from colorama import Fore, Style, init
-from colorama import Fore, Style
 import zipfile
 import rarfile
 
 
 #primera parte para instalar las dependencias
+def clear():
+    os.system("cls" if os.name == "nt" else "clear")
+
+
+#funcion para controlar como administra los archivos pyinstaller
+def get_app_directory():
+    if getattr(sys, 'frozen', False):
+        # Ejecutable compilado
+        return os.path.dirname(sys.executable)
+    else:
+        # Script de Python
+        return os.path.dirname(os.path.abspath(__file__))
+
+def aptupdate(package_manager):
+    
+    print(f"{Fore.RED}¿Desea Acutalizar el sistema de repositorios? si tiene paquetes Desactualizado puede que TSA no funcione. puede tomar un rato\n")
+    userinput = input("Y/N: ")
+    
+    if userinput.lower() in ["y", "yes", "s", "si"]:
+        subprocess.run(['sudo', package_manager, 'update', "-y"], check=True)
+            
+
 def instalar_dependencias():
 
     init(autoreset=True)
     # Si está compilado con PyInstaller, cambia el working directory
     # al directorio donde está el EXE (no _MEIPASS)
-    os.chdir(os.path.dirname(sys.executable))
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
     FLAG_FILE = "archivo.txt"
     if os.path.exists(FLAG_FILE): 
@@ -39,7 +57,7 @@ def instalar_dependencias():
     try:
         if package_manager == 'apt-get':
             # Comandos para distribuciones basadas en Debian/Ubuntu
-            subprocess.run(['sudo', 'apt-get', 'update'], check=True)
+            aptupdate(package_manager)
             subprocess.run(['sudo', 'apt-get', 'install', '-y', 'unrar'], check=True)
             subprocess.run(['sudo', 'apt-get', 'install', '-y', 'tmux'], check=True)
             subprocess.run(['sudo', 'apt-get', 'install', '-y', 'rar'], check=True)
@@ -53,6 +71,7 @@ def instalar_dependencias():
                  
 
         elif package_manager in ['yum', 'dnf']:
+            aptupdate(package_manager)
             # Comandos para distribuciones basadas en Red Hat (CentOS, RHEL, Rocky)
             subprocess.run(['sudo', package_manager, 'update', '-y'], check=True)
             subprocess.run(['sudo', package_manager, 'install', '-y', 'unrar'], check=True)
@@ -64,12 +83,11 @@ def instalar_dependencias():
         subprocess.run([sys.executable, '-m', 'pip', 'install', '--upgrade', 'pip', '--break-system-packages'], check=True)
         subprocess.run([sys.executable, '-m', 'pip', 'install', 'rarfile', '--break-system-packages'], check=True)
         subprocess.run([sys.executable, '-m', 'pip', 'install', 'rarfile', '--break-system-packages'], check=True)
-        subprocess.run([sys.executable, '-m', 'pip', 'install', 'rich', '--break-system-packages'], check=True)
         print(Fore.RED + "\npaquetes de python instalados")
 
 
         # Imprimir mensaje en color rojo
-        print(Fore.RED + "\nDependencias instaladas, ya puedes ejecutar el server.py")
+        print(Fore.GREEN + "\nDependencias instaladas, ya puedes ejecutar el server.py")
         print(Style.RESET_ALL)
 
     except subprocess.CalledProcessError as e:
@@ -77,23 +95,18 @@ def instalar_dependencias():
         print(f"Código de salida: {e.returncode}")
         print(Style.RESET_ALL)
 
-    except subprocess.CalledProcessError as e:
-        print(Fore.RED + f"Error al ejecutar el comando: {e.cmd}")
-        print(f"Código de salida: {e.returncode}")
-        print(Style.RESET_ALL)
-
-
+   
 # Inicializa colorama
 
 # Definición de colores para el efecto arcoíris
-colores = [Fore.RED, Fore.YELLOW, Fore.GREEN, Fore.CYAN, Fore.BLUE, Fore.MAGENTA]
+colores = [Fore.RED, Fore.YELLOW, Fore.GREEN, Fore.CYAN, Fore.BLUE, Fore.MAGENTA, Fore.RED]
 
 
 # Función para imprimir el título ASCII con efecto arcoíris
 def efecto_arcoiris(titulo_ascii):
-    for _ in range(2):  # Muestra el efecto arcoíris 2 veces
+    for _ in range(1):  # Muestra el efecto arcoíris 1 vez
         for color in colores:
-            os.system("cls" if os.name == "nt" else "clear")  # Limpia la consola
+            clear()
             print(color + titulo_ascii)
             time.sleep(0.2)  # Controla la velocidad del cambio de color
 
@@ -101,14 +114,17 @@ def efecto_arcoiris(titulo_ascii):
 
 
 def cerrar_serveo():
-
+    clear()
     try:
-        subprocess.run(["tmux", "kill-server"], check=True)
-        print("Se ha cerrado serveo")
+        subprocess.run(["tmux", "kill-session","-t","ngrok_session"], check=True)
+        print("Se ha cerrado la sesion de ngrok")
+
     except subprocess.CalledProcessError as e:
         # Si el comando devuelve un error
-        print(f"\n{Fore.RED}Nunca inciaste serveo o ngrok")
+        print(f"\n{Fore.RED}Nunca iniciaste ngrok")
         time.sleep(3)
+    
+    interfaz()
 
 
 # Función para agregar el repositorio de Tailscale
@@ -133,7 +149,7 @@ def agregar_ngrok():
     except subprocess.CalledProcessError as e:
         print(f"Error al agregar ngrok: {e}")
 
-
+#cambia y actualiza de el archivo.txt
 def cambiar_servidor(archivo_txt, servidor):
     # Lee el contenido actual del archivo
     lineas = []
@@ -182,6 +198,7 @@ def actualizar_archivo(archivo):
 
 
 def abrirserveo():
+    clear()
     # Nombre del archivo donde se guardará la salida
     output_file = "serveoip.log"
 
@@ -193,7 +210,7 @@ def abrirserveo():
     comando = f"ssh -R 0:localhost:7777 serveo.net > {output_file} 2>&1"
 
     # Inicia una nueva sesión de tmux y redirige la salida a un archivo
-    subprocess.Popen(["tmux", "new-session", "-d", "bash", "-c", comando])
+    subprocess.Popen(["tmux", "new-session", "-d", "-s","serveo_session","bash", "-c", comando])
 
     # Espera un poco para que el proceso inicie
     time.sleep(3)
@@ -227,7 +244,7 @@ def abrirserveo():
         print(f"No tienes permiso para acceder a {log_file_path}.")
     except Exception as e:
         print(f"Ocurrió un error inesperado: {e}")
-
+    interfaz()
 
 def abrir_ngrok():
     # Crear o usar una sesión de tmux llamada 'ngrok_session'
@@ -242,7 +259,7 @@ def abrir_ngrok():
     )
 
     print(
-        "Se ha abierto el server de ngrok.\nPuedes volver a ver la IP en el txt que se llama 'serverip.txt'."
+        "Se ha abierto el server de ngrok.\nPuedes volver a ver la IP en el txt que se llama 'serverip.txt'. o directamente en tmux con ctrl + b-s"
     )
 
     time.sleep(5)
@@ -260,17 +277,20 @@ def leer_salida_ngrok():
         with open("serverip.txt", "a") as file:  # Usar 'a' para agregar al final
             file.write(f"Dirección IP pública: {ip_publica}\n")
 
-        print(f"Dirección IP pública: {ip_publica} escrita en serverip.txt")
+        print(f"{Fore.GREEN}Dirección IP pública: {ip_publica} escrita en serverip.txt")
     except Exception as e:
         print(f"Error al obtener la dirección IP: {e}")
 
 
 # Función principal
 def main():
+
+    app_dir = get_app_directory()
+    os.chdir(app_dir)
     archivo_txt = "archivo.txt"
     
     if os.path.exists(archivo_txt):
-        print(f"Ninguna novedad")
+        print(f"{Fore.GREEN}Ninguna novedad")
        
         interfaz()
         
@@ -313,7 +333,7 @@ def main():
                     f.write(r.content)
                 print(f"Descargado: {archivo_destino}")
 
-                directorio_destino = os.path.join(os.getcwd(), "server")
+                directorio_destino = os.path.join(app_dir, "server")
                 os.makedirs(directorio_destino, exist_ok=True)
 
                 if archivo_destino.endswith(".zip"):
@@ -332,6 +352,7 @@ def main():
 
 
 def interfaz():
+    clear()
     ascii_art = r"""
         *                                               (              
 
@@ -385,7 +406,13 @@ def interfaz():
             opcion = input("Selecciona una opción (1-10): ")
         except EOFError:
             print(f"{Fore.RED}[ERROR] No hay entrada disponible (stdin cerrado). Cerrando...{Style.RESET_ALL}")
-            return  # salir de la función sin crashear
+            sys.exit(0)  # salir de la función sin crashear
+
+        except KeyboardInterrupt:
+            clear()
+            print("\n\nSaliendo del menú...")
+            sys.exit(0)
+
 
         if opcion == "1":
             abrir_server("archivo.txt")
@@ -404,7 +431,7 @@ def interfaz():
             sys.exit()
         elif opcion == "8":
             empaquetar_mundo()
-            print("se generar un archivo rar en la carpeta world con el nombre 'empaquetado' dale click derecho, descargar")
+            print("se generara un archivo rar en la carpeta world con el nombre 'empaquetado' ")
             time.sleep(10)
         elif opcion == "9":
             actualizar_programa()
@@ -413,9 +440,13 @@ def interfaz():
             print(f"{Fore.RED}Se inicio syncthing si haces 'Ctrl + c' se cerrara pero si sales con 7 se ejecutara en segundo plano")
             time.sleep(15)
         else:
-            print("Opción inválida. Por favor, selecciona una opción válida.")
+            clear()
+            print(f"{Fore.RED}Opción inválida. Por favor, selecciona una opción válida.")
+            time.sleep(5)
+            interfaz()
 
-
+                   
+        
 def ejecutar_script(version):
     # Ruta relativa de los scripts
     script_144 = os.path.join("server", "start-tModLoaderServer.sh")
@@ -427,7 +458,7 @@ def ejecutar_script(version):
             subprocess.run(["bash", script_144], check=True)
             print("Ejecutando start-tModLoaderServer.sh para la versión 1.4.4.")
         elif version == "1.4.3":
-            subprocess.run(["bash", script_143], check=True)
+            subprocess.run(["bash", script_143,"-config","serverconfig.txt"],  check=True)
             print("Ejecutando start-tModLoaderServer.sh para la versión 1.4.3.")
         elif version == "1.3.5.3":
             subprocess.run([script_1353, "-config", "serverconfig.txt"], check=True)
@@ -439,6 +470,7 @@ def ejecutar_script(version):
 
 
 def abrir_server(ruta_archivo):
+    clear()
     try:
         with open(ruta_archivo, "r") as f:
             for linea in f:
@@ -455,8 +487,15 @@ def abrir_server(ruta_archivo):
     except FileNotFoundError:
         print("Archivo no encontrado.")
 
+    except KeyboardInterrupt:
+            clear()
+            print("\n\nSaliendo del menú...")
+            sys.exit(0)
+
+
 
 def conexion():
+    clear()
     print("\n")
     print(
         f"¿Qué servicio usarás?\n1. ngrok | el más rápido pero es pago\n2. serveo | aguanta muchas personas pero es lento\n3. tailscale | aguanta pocas personas pero es rápido |{Fore.GREEN} recuerda tener la app en tu equipo{Style.RESET_ALL}\n4. Cerrar ngrok y serveo\n5. cerrar tailscale\n6. atras"
@@ -466,7 +505,7 @@ def conexion():
 
     if opcion3 == "1":
         token = input(
-            'Pega tu config token de ngrok. Ejemplo:\n"2Pa56EWmwdsfVFHGEW4wWWnSpeG_3TfzL2M"\n:'
+            'Pega tu config token de ngrok. Ejemplo:\n"2Pa56EWmwdsfVFHGEW4"\n:'
         )
 
         try:
@@ -507,7 +546,7 @@ def conexion():
         leer_salida_ngrok()
 
     elif opcion3 == "2":
-        print(f"{Fore.RED}\nSe ha iniciado serveo ya puedes iniciar el server")
+        print(f"{Fore.RED}\nIntentando abrir serveo")
         abrirserveo()
         actualizar_archivo("archivo.txt")
         time.sleep(4)
@@ -583,6 +622,7 @@ def importar_mods(destination_folder="mods"):
 
 
 def importar_mundo(destination_folder="worlds"):
+    clear()
     formatear_carpeta()
     # Comprobar y crear la carpeta de destino si no existe
     if not os.path.exists(destination_folder):
@@ -593,6 +633,12 @@ def importar_mundo(destination_folder="worlds"):
         "Coloca tu link de mediafire | El rar o el zip debe contener todos los archivos del mundo en la raiz\n:"
     )
     command = ["wget", "--content-disposition", url]
+    
+    if not url:
+        clear()
+        print(Fore.RED + "No se proporcionó una URL válida." + Style.RESET_ALL)
+        time.sleep(3)
+        interfaz()
 
     try:
         # Ejecutar el comando
@@ -613,18 +659,22 @@ def importar_mundo(destination_folder="worlds"):
                 with zipfile.ZipFile(archivo_path, "r") as zip_ref:
                     zip_ref.extractall(destination_folder)
                 print(f"{Fore.GREEN}Archivo zip extraído: {archivo}{Style.RESET_ALL}")
-
+                time.sleep(5)
                 actualizar_mundo()
             # Comprobar si el archivo es un rar
             elif archivo.endswith(".rar"):
                 with rarfile.RarFile(archivo_path) as rar_ref:
                     rar_ref.extractall(destination_folder)
                 print(f"{Fore.GREEN}Archivo rar extraído: {archivo}{Style.RESET_ALL}")
-
+                time.sleep(5)
                 actualizar_mundo()
+            
+            interfaz()
 
     except subprocess.CalledProcessError as e:
-        print(f"Error al descargar el archivo: {e}")
+        print(f"{Fore.RED}Error al descargar el archivo")
+        time.sleep(6)
+        interfaz()
     except FileNotFoundError:
         print(
             Fore.RED
@@ -633,17 +683,6 @@ def importar_mundo(destination_folder="worlds"):
         )
     except Exception as e:
         print(Fore.RED + f"Ocurrió un error: {e}" + Style.RESET_ALL)
-
-    except subprocess.CalledProcessError as e:
-        print(f"Error al descargar el archivo: {e}")
-    except FileNotFoundError:
-        print(
-            Fore.RED
-            + "El comando 'mediafire-dl' no se encuentra. Asegúrate de que esté instalado y en tu PATH."
-        )
-    except (zipfile.BadZipFile, rarfile.Error) as e:
-        print(f"Error al extraer el archivo: {e}")
-
 
 # Bloque 2: Función para extraer archivos .rar
 def extraer_rar(rar_path, destino):
@@ -709,7 +748,7 @@ def descargar_configuracion():
     else:
         print(f"Error al descargar el archivo: {response.status_code}")
 
-
+#toma la version del jogo y edita el serverconfig 
 def actualizar_mundo(destination_folder="worlds"):
     version = obtener_version_tmodloader()
     if version is None:
@@ -825,6 +864,7 @@ def inciar_tailscale():
 
 
 def detener_tailscale():
+    clear()
     try:
 
         subprocess.run(["sudo", "pkill", "tailscaled"], check=True)
@@ -837,6 +877,7 @@ def detener_tailscale():
 
 
 def actualizar_tmod():
+    clear()
     usuario = "tModLoader"
     repositorio = "tModLoader"
     url_releases = (
@@ -895,6 +936,9 @@ def actualizar_tmod():
                 with open(ruta_archivo, "w") as archivo:
                     archivo.writelines(lineas)
 
+
+                interfaz()
+
             else:
                 print(f"Error al descargar el archivo: {r.status_code}")
         else:
@@ -904,6 +948,7 @@ def actualizar_tmod():
 
 
 def cambiar_version():
+    clear()
     version = input(
         f"\n\n\n\n¿que version desea usar?\n\n1. 1.4(ultima)\n2. 1.4.3\n3. 1.3.5.3\n"
     )
@@ -916,6 +961,7 @@ def cambiar_version():
 
 
 def importar_version_3():
+    clear()
     # Crear la carpeta si no existe
     carpeta = "1.3.5.3"
     if not os.path.exists(carpeta):
@@ -932,7 +978,7 @@ def importar_version_3():
     with open(archivo_destino, "wb") as f:
         f.write(response.content)
 
-    print(f"se ha descargado la version 1.3.5.3 en: {archivo_destino}")
+    print(f"se esta descargando la version 1.3.5.3 en: {archivo_destino}")
 
     # Descargar el archivo
     response = requests.get(url)
@@ -971,6 +1017,7 @@ def importar_version_3():
 
 
 def importar_version_2():
+    clear()
     # Crear la carpeta si no existe
     carpeta = "1.4.3"
     if not os.path.exists(carpeta):
@@ -1054,7 +1101,7 @@ def empaquetar_mundo(carpeta="worlds", nombre_archivo="empaquetado.rar"):
 URL_VERSION = "https://raw.githubusercontent.com/luisfer153/TSA/main/version.txt"
 URL_BINARIO_TEMPLATE = "https://github.com/luisfer153/TSA/releases/download/v{v}/TSA-{v}-linux-x86_64"
 
-VERSION = "1.0.0"  # versión actual
+VERSION = "1.0.1"  # versión actual
 
 def actualizar_programa():
     try:
@@ -1067,7 +1114,7 @@ def actualizar_programa():
         return
 
     if ultima != VERSION:
-        print(f"📢 Hay una nueva versión disponible: {ultima}")
+        print(f"Hay una nueva versión disponible: {ultima}")
 
         # Construir URL con la versión real
         url_binario = URL_BINARIO_TEMPLATE.format(v=ultima)
@@ -1086,12 +1133,12 @@ def actualizar_programa():
                     f.write(chunk)
 
             os.chmod(nombre_archivo, 0o755)
-            print(f"✅ Descargado como {nombre_archivo}")
-            print("👉 Por seguridad, reemplaza manualmente el binario actual.")
+            print(f"Descargado como {nombre_archivo}")
+            print("Por seguridad, reemplaza manualmente el binario actual.")
         except Exception as e:
-            print(f"❌ Error descargando la actualización: {e}")
+            print(f"Error descargando la actualización: {e}")
     else:
-        print("✅ Ya estás en la última versión")
+        print("Ya estás en la última versión")
 
     time.sleep(3)
     
@@ -1100,12 +1147,12 @@ def actualizar_programa():
 
 if __name__ == "__main__":
     colorama.init(autoreset=True)  # Inicializa colorama
-    #si el archivo txt existe no me interesa que se ejecute depenedncias
+    #si el archivo txt existe no me interesa que se ejecute depenedencias
     FLAG_FILE = "archivo.txt"
     if os.path.exists(FLAG_FILE): 
         main()
-    #si no existe que se ejecute dependencias y main para que instale algo luego que se ejecute una segunda vez para que incialice la aplicacion
-    instalar_dependencias()  # Llama a la función para instalar dependencias
+    #si no existe que se ejecute dependencias y main para que instale la primera vez luego que se ejecute una segunda vez para que incialice la aplicacion
+    instalar_dependencias()
     main()
     main()
 
