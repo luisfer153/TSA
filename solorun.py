@@ -24,6 +24,10 @@ def get_app_directory():
         # Script de Python
         return os.path.dirname(os.path.abspath(__file__))
 
+def instancia():
+    pass
+
+
 def aptupdate(package_manager):
     
     print(f"{Fore.RED}¿Desea Acutalizar el sistema de repositorios? si tiene paquetes Desactualizado puede que TSA no funcione. puede tomar un rato\n")
@@ -73,7 +77,6 @@ def instalar_dependencias():
         elif package_manager in ['yum', 'dnf']:
             aptupdate(package_manager)
             # Comandos para distribuciones basadas en Red Hat (CentOS, RHEL, Rocky)
-            subprocess.run(['sudo', package_manager, 'update', '-y'], check=True)
             subprocess.run(['sudo', package_manager, 'install', '-y', 'unrar'], check=True)
             subprocess.run(['sudo', package_manager, 'install', '-y', 'tmux'], check=True)
             subprocess.run(['sudo', package_manager, 'install', '-y', 'rar'], check=True)
@@ -623,12 +626,13 @@ def importar_mods(destination_folder="mods"):
 
 def importar_mundo(destination_folder="worlds"):
     clear()
-    formatear_carpeta()
+    #formatear_carpeta()
     # Comprobar y crear la carpeta de destino si no existe
     if not os.path.exists(destination_folder):
         os.makedirs(destination_folder)
 
-    # Preparar el comando para ejecutar mediafire-dl
+      
+    # Preparar el comando para ejecutar el descargar en este caso wget
     url = input(
         "Coloca tu link de mediafire | El rar o el zip debe contener todos los archivos del mundo en la raiz\n:"
     )
@@ -641,30 +645,41 @@ def importar_mundo(destination_folder="worlds"):
         interfaz()
 
     try:
+        clear()
+        sub_folder_name = input(Fore.GREEN +
+                "\ncoloca el nombre de la carpeta donde se guardara tu mundo: "
+                )
+                    
+    # Crea la subcarpeta 'respectiva del mundo' dentro de la carpeta de worlds
+
+        sub_folder = os.path.join(destination_folder, sub_folder_name)
+        if not os.path.exists(sub_folder):
+            os.makedirs(sub_folder)
+        clear()
         # Ejecutar el comando
-        subprocess.run(command, check=True, cwd=destination_folder)
+        subprocess.run(command, check=True, cwd=sub_folder)
         print(
-            f"\n{Fore.RED}Archivo descargado y guardado en {destination_folder}{Style.RESET_ALL}"
+            f"\n{Fore.RED}Archivo descargado y guardado en {sub_folder}{Style.RESET_ALL}"
         )
 
         # Listar los archivos en la carpeta de destino
-        archivos_descargados = os.listdir(destination_folder)
+        archivos_descargados = os.listdir(sub_folder)
 
         # Extraer archivos si hay un archivo zip o rar
         for archivo in archivos_descargados:
-            archivo_path = os.path.join(destination_folder, archivo)
+            archivo_path = os.path.join(sub_folder, archivo)
 
             # Comprobar si el archivo es un zip
             if archivo.endswith(".zip"):
                 with zipfile.ZipFile(archivo_path, "r") as zip_ref:
-                    zip_ref.extractall(destination_folder)
+                    zip_ref.extractall(sub_folder)
                 print(f"{Fore.GREEN}Archivo zip extraído: {archivo}{Style.RESET_ALL}")
                 time.sleep(5)
                 actualizar_mundo()
             # Comprobar si el archivo es un rar
             elif archivo.endswith(".rar"):
                 with rarfile.RarFile(archivo_path) as rar_ref:
-                    rar_ref.extractall(destination_folder)
+                    rar_ref.extractall(sub_folder)
                 print(f"{Fore.GREEN}Archivo rar extraído: {archivo}{Style.RESET_ALL}")
                 time.sleep(5)
                 actualizar_mundo()
@@ -748,9 +763,12 @@ def descargar_configuracion():
     else:
         print(f"Error al descargar el archivo: {response.status_code}")
 
-#toma la version del jogo y edita el serverconfig 
+#toma la version del jogo y edita el serverconfig.txt 
 def actualizar_mundo(destination_folder="worlds"):
     version = obtener_version_tmodloader()
+
+     
+
     if version is None:
         print("No se encontró la versión de tModLoader en el archivo.")
         return
